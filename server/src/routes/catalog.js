@@ -222,12 +222,18 @@ router.post("/items", requireUser, async (req, res) => {
   const availableFrom = String(req.body.availableFrom);
   const latest = await Item.findOne().sort({ code: -1 }).select("code");
   const code = (latest?.code || 0) + 1;
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  const files = photos.map((photo, index) => {
-    const name = `${code}-${index + 1}.${photo.ext}`;
-    fs.writeFileSync(path.join(uploadsDir, name), photo.buffer);
-    return `/uploads/${name}`;
-  });
+  const storedOnDisk = !process.env.VERCEL;
+  let files;
+  if (storedOnDisk) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    files = photos.map((photo, index) => {
+      const name = `${code}-${index + 1}.${photo.ext}`;
+      fs.writeFileSync(path.join(uploadsDir, name), photo.buffer);
+      return `/uploads/${name}`;
+    });
+  } else {
+    files = req.body.images.map((photo) => String(photo));
+  }
 
   try {
     const item = await Item.create({
@@ -257,7 +263,7 @@ router.post("/items", requireUser, async (req, res) => {
     const [shaped] = await withReviews([item]);
     res.status(201).json(shaped);
   } catch (error) {
-    files.forEach((file) => fs.rmSync(path.join(uploadsDir, path.basename(file)), { force: true }));
+    if (storedOnDisk) files.forEach((file) => fs.rmSync(path.join(uploadsDir, path.basename(file)), { force: true }));
     if (error?.code === 11000) return res.status(409).json({ message: "Could not save the listing. Try again." });
     throw error;
   }

@@ -16,14 +16,18 @@ function sign(user) {
   return jwt.sign({ sub: String(user._id) }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
-function setCookie(res, token) {
-  res.cookie(COOKIE, token, {
+function cookieOptions(extra = {}) {
+  return {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
-    maxAge: WEEK,
+    secure: Boolean(process.env.VERCEL),
     path: "/",
-  });
+    ...extra,
+  };
+}
+
+function setCookie(res, token) {
+  res.cookie(COOKIE, token, cookieOptions({ maxAge: WEEK }));
 }
 
 function readUser(req) {
@@ -91,7 +95,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", (_req, res) => {
-  res.clearCookie(COOKIE, { path: "/" });
+  res.clearCookie(COOKIE, cookieOptions());
   res.json({ ok: true });
 });
 
