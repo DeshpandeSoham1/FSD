@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import ClubCard from "../components/ClubCard";
 import ItemCard from "../components/ItemCard";
+import { clubLogo } from "../clubLogos";
 import { useStore } from "../store";
 
 export default function Clubs() {
@@ -43,10 +44,13 @@ export function ClubDetail() {
         <span>/</span>
         <span>{club.name}</span>
       </nav>
-      <div className="page-head">
-        <p className="eyebrow">{club.category}</p>
-        <h1>{club.name}</h1>
-        <p className="muted">{club.description}</p>
+      <div className="page-head club-head">
+        {clubLogo(club.name) ? <img src={clubLogo(club.name)} alt="" className="club-mark" /> : null}
+        <div>
+          <p className="eyebrow">{club.category}</p>
+          <h1>{club.name}</h1>
+          <p className="muted">{club.description}</p>
+        </div>
       </div>
       {clubItems.length ? (
         <div className="item-grid">

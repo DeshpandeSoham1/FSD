@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="container footer-inner">
         <div>
           <Link to="/" className="logo">
-            BORROW<span>BOX</span>
+            borrow<span>.box</span>
           </Link>
           <p>Borrow what you need. Share what you have.</p>
         </div>

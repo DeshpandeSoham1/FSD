@@ -11,6 +11,7 @@ export default function Auth({ mode }) {
   const from = location.state?.from || "/dashboard";
   const [form, setForm] = useState({ name: "", email: "", usn: "", password: "" });
   const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
 
   if (user) return <Navigate to={from} replace />;
 
@@ -27,6 +28,8 @@ export default function Auth({ mode }) {
     if (isRegister && usnError(usn)) return setError(usnError(usn));
     if (form.password.length < 6) return setError("Password must be at least 6 characters.");
 
+    setError("");
+    setPending(true);
     try {
       if (isRegister) await register({ name: form.name.trim(), email, usn, password: form.password });
       else await login({ email, password: form.password });
@@ -34,6 +37,7 @@ export default function Auth({ mode }) {
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
+      setPending(false);
     }
   }
 
@@ -76,7 +80,9 @@ export default function Auth({ mode }) {
           />
         </label>
         {error && <p className="form-error">{error}</p>}
-        <button type="submit" className="btn btn-primary block">{isRegister ? "Register" : "Log in"}</button>
+        <button type="submit" className="btn btn-primary block" disabled={pending}>
+          {pending ? "Please wait…" : isRegister ? "Register" : "Log in"}
+        </button>
         <p className="muted small center">
           {isRegister ? "Already have an account? " : "New here? "}
           <Link to={isRegister ? "/login" : "/register"} state={location.state} className="text-link">

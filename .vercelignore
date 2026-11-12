@@ -1,0 +1,10 @@
+node_modules
+server/node_modules
+client/node_modules
+client/dist
+client/public/background.mp4
+server/data
+server/uploads
+server/.env
+.git
+**/.env

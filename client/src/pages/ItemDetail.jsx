@@ -14,6 +14,7 @@ import {
   toISODate,
 } from "../data";
 import imageCredits from "../imageCredits.json";
+import { clubLogo } from "../clubLogos";
 import { useStore } from "../store";
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -136,7 +137,12 @@ export default function ItemDetail() {
         <div className="detail-info">
           <div className="badges">
             <span className="badge badge-muted">{category?.name}</span>
-            {club && <Link to={`/clubs/${club.id}`} className="badge badge-ok">{club.name} club</Link>}
+            {club && (
+              <Link to={`/clubs/${club.id}`} className="badge badge-ok club-badge">
+                {clubLogo(club.name) ? <img src={clubLogo(club.name)} alt="" /> : null}
+                {club.name} club
+              </Link>
+            )}
             <span className={item.available ? "badge badge-ok" : "badge badge-amber"}>
               {item.available ? "Available now" : `Booked until ${item.availableFrom}`}
             </span>

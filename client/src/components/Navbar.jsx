@@ -3,12 +3,10 @@ import { Link, NavLink } from "react-router-dom";
 import { useStore } from "../store";
 
 const links = [
-  { to: "/", label: "Home", end: true },
   { to: "/explore", label: "Explore" },
   { to: "/categories", label: "Categories" },
   { to: "/clubs", label: "Clubs" },
-  { to: "/list", label: "List an Item" },
-  { to: "/dashboard", label: "Dashboard" },
+  { to: "/list", label: "List" },
 ];
 
 export default function Navbar() {
@@ -20,7 +18,7 @@ export default function Navbar() {
     <header className="nav">
       <div className="container nav-inner">
         <Link to="/" className="logo" onClick={close}>
-          BORROW<span>BOX</span>
+          borrow<span>.box</span>
         </Link>
         <button
           type="button"
@@ -36,13 +34,15 @@ export default function Navbar() {
             <NavLink
               key={link.to}
               to={link.to}
-              end={link.end}
               onClick={close}
               className={({ isActive }) => (isActive ? "active" : undefined)}
             >
               {link.label}
             </NavLink>
           ))}
+          <NavLink to="/dashboard" onClick={close} className={({ isActive }) => (isActive ? "active" : undefined)}>
+            Dashboard
+          </NavLink>
           {authReady && user ? (
             <div className="nav-auth">
               <span className="nav-user">{user.name}</span>

@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
-import { formatPrice, formatRupees, getCategory, ownerLabel } from "../data";
+import { formatPrice, formatRupees, getCategory, getClub, ownerLabel } from "../data";
+import { clubLogo } from "../clubLogos";
 import ItemImage from "./ItemImage";
 
 export default function ItemCard({ item }) {
   const category = getCategory(item.categoryId);
+  const club = item.clubId ? getClub(item.clubId) : null;
+  const logo = clubLogo(club?.name);
 
   return (
     <Link to={`/items/${item.id}`} className="card item-card">
@@ -16,7 +19,10 @@ export default function ItemCard({ item }) {
       <div className="item-body">
         <span className="club-line">{category?.name}</span>
         <h3>{item.title}</h3>
-        <p>{ownerLabel(item)} · {item.location}</p>
+        <p>
+          {logo ? <img src={logo} alt="" className="club-inline" /> : null}
+          {ownerLabel(item)} · {item.location}
+        </p>
         <div className="item-meta">
           <strong>{formatPrice(item.pricePerDay)}</strong>
           <span className="muted small">Worth {formatRupees(item.originalPrice)}</span>

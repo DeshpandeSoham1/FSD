@@ -1,3 +1,9 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/auth/:path*", "destination": "https://borrowbox-api-pearl.vercel.app/auth/:path*" },
+    { "source": "/api/:path*", "destination": "https://borrowbox-api-pearl.vercel.app/api/:path*" },
+    { "source": "/health", "destination": "https://borrowbox-api-pearl.vercel.app/health" },
+    { "source": "/uploads/:path*", "destination": "https://borrowbox-api-pearl.vercel.app/uploads/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

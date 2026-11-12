@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
-import BackgroundVideo from "./components/BackgroundVideo";
 import Navbar from "./components/Navbar";
 import Auth from "./pages/Auth";
 import Categories from "./pages/Categories";
@@ -31,16 +30,6 @@ function ScrollToTop() {
   return null;
 }
 
-function CatalogNotice() {
-  const { catalogError } = useStore();
-  if (!catalogError) return null;
-  return (
-    <div className="container">
-      <p className="form-error catalog-error">{catalogError}</p>
-    </div>
-  );
-}
-
 function Toast() {
   const { toast } = useStore();
   if (!toast) return null;
@@ -57,11 +46,8 @@ export default function App() {
       <BrowserRouter>
         <ScrollToTop />
         <div className="app">
-          <BackgroundVideo />
-          <div className="bg-scrim" aria-hidden="true" />
           <Navbar />
           <main>
-            <CatalogNotice />
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/explore" element={<Explore />} />

@@ -5,7 +5,7 @@ import { MIN_RENT, formatRupees } from "../data";
 import { useStore } from "../store";
 
 const sorters = {
-  recent: () => 0,
+  recent: (a, b) => b.id - a.id,
   "price-asc": (a, b) => a.pricePerDay - b.pricePerDay,
   "price-desc": (a, b) => b.pricePerDay - a.pricePerDay,
   rating: (a, b) => (b.ownerRating ?? 0) - (a.ownerRating ?? 0),

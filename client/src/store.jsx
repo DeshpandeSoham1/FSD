@@ -11,7 +11,6 @@ export function StoreProvider({ children }) {
   const [clubs, setClubs] = useState(seedClubs);
   const [catalogItems, setCatalogItems] = useState(seedItems);
   const [catalogReady, setCatalogReady] = useState(false);
-  const [catalogError, setCatalogError] = useState("");
   const [requests, setRequests] = useState([]);
   const [toast, setToast] = useState(null);
   const toastTimer = useRef(null);
@@ -26,10 +25,7 @@ export function StoreProvider({ children }) {
         setClubs(nextClubs);
         setCatalogItems(nextItems);
       })
-      .then(() => setCatalogError(""))
-      .catch(() => {
-        if (import.meta.env.DEV) setCatalogError("The catalog couldn't be loaded. Start the API and refresh.");
-      })
+      .catch(() => {})
       .finally(() => setCatalogReady(true));
   }, []);
 
@@ -107,7 +103,6 @@ export function StoreProvider({ children }) {
       user,
       authReady,
       catalogReady,
-      catalogError,
       categories,
       clubs,
       login,
@@ -124,7 +119,7 @@ export function StoreProvider({ children }) {
       toast,
       showToast,
     };
-  }, [user, authReady, catalogReady, catalogError, categories, clubs, catalogItems, login, register, logout, addItem, requests, addRequest, setRequestStatus, addReview, toast, showToast]);
+  }, [user, authReady, catalogReady, categories, clubs, catalogItems, login, register, logout, addItem, requests, addRequest, setRequestStatus, addReview, toast, showToast]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
