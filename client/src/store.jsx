@@ -19,6 +19,9 @@ export function StoreProvider({ children }) {
   useEffect(() => {
     Promise.all([api("/api/categories"), api("/api/clubs"), api("/api/items")])
       .then(([nextCategories, nextClubs, nextItems]) => {
+        if (![nextCategories, nextClubs, nextItems].every(Array.isArray)) {
+          throw new Error("Catalog response was not a list.");
+        }
         setCategories(nextCategories);
         setClubs(nextClubs);
         setCatalogItems(nextItems);

@@ -5,7 +5,15 @@ export async function api(path, { method = "GET", body } = {}) {
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   });
-  const data = await response.json().catch(() => ({}));
+  const text = await response.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    const error = new Error("The server didn't return JSON.");
+    error.status = response.status;
+    throw error;
+  }
   if (!response.ok) {
     const error = new Error(data.message || "Something went wrong.");
     error.status = response.status;
