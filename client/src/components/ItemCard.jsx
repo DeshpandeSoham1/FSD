@@ -1,20 +1,26 @@
 import { Link } from "react-router-dom";
-import { formatPrice, getClub } from "../data";
+import { formatPrice, formatRupees, getCategory, ownerLabel } from "../data";
+import ItemImage from "./ItemImage";
 
 export default function ItemCard({ item }) {
-  const club = getClub(item.clubId);
+  const category = getCategory(item.categoryId);
 
   return (
     <Link to={`/items/${item.id}`} className="card item-card">
-      <span className="emoji" aria-hidden="true">{item.emoji}</span>
-      <h3>{item.title}</h3>
-      <p>{item.description}</p>
-      <span className="club-line">{club?.name}</span>
-      <div className="item-meta">
-        <strong>{formatPrice(item.pricePerDay)}</strong>
-        <span className={item.available ? "badge badge-ok" : "badge badge-muted"}>
-          {item.available ? "Available" : "Unavailable"}
+      <div className="item-thumb">
+        <ItemImage src={item.images[0]} alt={item.title} />
+        <span className={item.available ? "badge badge-ok thumb-badge" : "badge badge-muted thumb-badge"}>
+          {item.available ? "Available" : "Booked"}
         </span>
+      </div>
+      <div className="item-body">
+        <span className="club-line">{category?.name}</span>
+        <h3>{item.title}</h3>
+        <p>{ownerLabel(item)} · {item.location}</p>
+        <div className="item-meta">
+          <strong>{formatPrice(item.pricePerDay)}</strong>
+          <span className="muted small">Worth {formatRupees(item.originalPrice)}</span>
+        </div>
       </div>
     </Link>
   );

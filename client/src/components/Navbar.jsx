@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useStore } from "../store";
 
 const links = [
   { to: "/", label: "Home", end: true },
   { to: "/explore", label: "Explore" },
+  { to: "/categories", label: "Categories" },
   { to: "/clubs", label: "Clubs" },
+  { to: "/list", label: "List an Item" },
   { to: "/dashboard", label: "Dashboard" },
 ];
 
-export default function Navbar({ user, onLogout }) {
+export default function Navbar() {
+  const { user, authReady, logout: onLogout } = useStore();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
@@ -39,18 +43,18 @@ export default function Navbar({ user, onLogout }) {
               {link.label}
             </NavLink>
           ))}
-          {user ? (
+          {authReady && user ? (
             <div className="nav-auth">
               <span className="nav-user">{user.name}</span>
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => { close(); onLogout(); }}>
                 Logout
               </button>
             </div>
-          ) : (
+          ) : authReady ? (
             <NavLink to="/login" onClick={close} className="btn btn-primary btn-sm nav-login">
               Login
             </NavLink>
-          )}
+          ) : null}
         </nav>
       </div>
     </header>

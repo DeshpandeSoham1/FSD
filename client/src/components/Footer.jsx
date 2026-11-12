@@ -12,10 +12,11 @@ export default function Footer() {
         </div>
         <div className="footer-links">
           <Link to="/explore">Explore</Link>
+          <Link to="/categories">Categories</Link>
           <Link to="/clubs">Clubs</Link>
-          <Link to="/dashboard">Dashboard</Link>
+          <Link to="/list">List an Item</Link>
         </div>
-        <p className="muted">Campus-only · Pay the owner at handover</p>
+        <p className="muted">Campus-only · Pay the owner at handover · Item photos from Wikimedia Commons</p>
       </div>
     </footer>
   );
