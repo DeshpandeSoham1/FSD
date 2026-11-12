@@ -24,7 +24,9 @@ export function StoreProvider({ children }) {
         setCatalogItems(nextItems);
       })
       .then(() => setCatalogError(""))
-      .catch(() => setCatalogError("The catalog couldn't be loaded. Start the API and refresh."))
+      .catch(() => {
+        if (import.meta.env.DEV) setCatalogError("The catalog couldn't be loaded. Start the API and refresh.");
+      })
       .finally(() => setCatalogReady(true));
   }, []);
 
