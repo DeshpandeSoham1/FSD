@@ -70,7 +70,6 @@ export default function Home() {
         <div className="container repeat-inner">
           <h2>List. Rent. Return. Repeat.</h2>
           <FeatureItem />
-          <p>The objects rising through the page are the things students actually lend: a camera, a guitar, a pack, a speaker, a tent, a bike.</p>
         </div>
       </section>
 

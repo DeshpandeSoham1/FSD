@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { BrowserRouter, Link, Route, Routes, useLocation } from "react-router-dom";
+import Assistant from "./components/Assistant";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import Auth from "./pages/Auth";
@@ -59,10 +60,12 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Auth mode="login" />} />
               <Route path="/register" element={<Auth mode="register" />} />
+              <Route path="/forgot" element={<Auth mode="reset" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
+          <Assistant />
           <Toast />
         </div>
       </BrowserRouter>

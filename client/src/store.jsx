@@ -64,6 +64,12 @@ export function StoreProvider({ children }) {
     return nextUser;
   }, []);
 
+  const resetPassword = useCallback(async (body) => {
+    const nextUser = await api("/auth/reset", { method: "POST", body });
+    setUser(nextUser);
+    return nextUser;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api("/auth/logout", { method: "POST" });
@@ -107,6 +113,7 @@ export function StoreProvider({ children }) {
       clubs,
       login,
       register,
+      resetPassword,
       logout,
       items: catalogItems,
       myItems,
@@ -119,7 +126,7 @@ export function StoreProvider({ children }) {
       toast,
       showToast,
     };
-  }, [user, authReady, catalogReady, categories, clubs, catalogItems, login, register, logout, addItem, requests, addRequest, setRequestStatus, addReview, toast, showToast]);
+  }, [user, authReady, catalogReady, categories, clubs, catalogItems, login, register, resetPassword, logout, addItem, requests, addRequest, setRequestStatus, addReview, toast, showToast]);
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

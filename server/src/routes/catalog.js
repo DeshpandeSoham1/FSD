@@ -172,7 +172,51 @@ function photoFile(value) {
   const jpeg = buffer[0] === 0xff && buffer[1] === 0xd8;
   const webp = buffer.slice(0, 4).toString() === "RIFF" && buffer.slice(8, 12).toString() === "WEBP";
   const ext = jpeg ? "jpg" : png ? "png" : webp ? "webp" : "";
-  return ext ? { ext, buffer } : null;
+  if (!ext) return null;
+  const size = imageSize(buffer);
+  if (!size || size.width < 400 || size.height < 400) return null;
+  return { ext, buffer };
+}
+
+function imageSize(buffer) {
+  if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+    let offset = 2;
+    while (offset < buffer.length - 8) {
+      if (buffer[offset] !== 0xff) {
+        offset += 1;
+        continue;
+      }
+      const marker = buffer[offset + 1];
+      if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+        return { height: buffer.readUInt16BE(offset + 5), width: buffer.readUInt16BE(offset + 7) };
+      }
+      if (marker === 0xd8 || marker === 0xd9 || (marker >= 0xd0 && marker <= 0xd7)) {
+        offset += 2;
+        continue;
+      }
+      const length = buffer.readUInt16BE(offset + 2);
+      if (length < 2) return null;
+      offset += 2 + length;
+    }
+    return null;
+  }
+  if (buffer.toString("ascii", 1, 4) === "PNG" && buffer.length >= 24) {
+    return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+  }
+  if (buffer.toString("ascii", 0, 4) === "RIFF" && buffer.toString("ascii", 8, 12) === "WEBP") {
+    const format = buffer.toString("ascii", 12, 16);
+    if (format === "VP8X" && buffer.length >= 30) {
+      return { width: 1 + buffer.readUIntLE(24, 3), height: 1 + buffer.readUIntLE(27, 3) };
+    }
+    if (format === "VP8 " && buffer.length >= 30) {
+      return { width: buffer.readUInt16LE(26) & 0x3fff, height: buffer.readUInt16LE(28) & 0x3fff };
+    }
+    if (format === "VP8L" && buffer.length >= 25) {
+      const bits = buffer.readUInt32LE(21);
+      return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+    }
+  }
+  return null;
 }
 
 function listingError(body) {
@@ -186,7 +230,7 @@ function listingError(body) {
   const today = todayISO();
 
   if (photos.length < 1 || photos.length > MAX_PHOTOS) return `Add 1 to ${MAX_PHOTOS} photos of the actual item.`;
-  if (photos.some((photo) => !photoFile(photo))) return "Each photo must be a JPG, PNG, or WEBP under 2 MB.";
+  if (photos.some((photo) => !photoFile(photo))) return "Each photo must be a clear JPG, PNG, or WEBP, at least 400px on each side and under 2 MB.";
   if (title.length < 5 || title.length > 60) return "Give the item a specific name (brand + model works best).";
   if (BLOCKED_WORDS.test(title)) return "Personal-care, everyday, and consumable items can't be rented here.";
   if (!body.categoryId) return "Pick a category.";

@@ -87,9 +87,30 @@ router.post("/login", async (req, res) => {
   if (message) return res.status(400).json({ message });
 
   const user = await User.findOne({ email });
-  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
-    return res.status(401).json({ message: "Email or password is incorrect." });
+  if (!user) return res.status(401).json({ message: "No account with that email yet. Create one on this site first." });
+  if (!(await bcrypt.compare(password, user.passwordHash))) {
+    return res.status(401).json({ message: "That password doesn't match this account." });
   }
+  setCookie(res, sign(user));
+  res.json(publicUser(user));
+});
+
+router.post("/reset", async (req, res) => {
+  const email = String(req.body.email || "").trim().toLowerCase();
+  const usn = String(req.body.usn || "").trim().toUpperCase();
+  const password = String(req.body.password || "");
+  if (!email.endsWith(COLLEGE_DOMAIN)) {
+    return res.status(400).json({ message: `Use your college email ending in ${COLLEGE_DOMAIN}.` });
+  }
+  if (usnError(usn)) return res.status(400).json({ message: usnError(usn) });
+  if (password.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters." });
+
+  const user = await User.findOne({ email });
+  if (!user || user.usn !== usn) {
+    return res.status(401).json({ message: "That email and USN don't match an account." });
+  }
+  user.passwordHash = await bcrypt.hash(password, 10);
+  await user.save();
   setCookie(res, sign(user));
   res.json(publicUser(user));
 });

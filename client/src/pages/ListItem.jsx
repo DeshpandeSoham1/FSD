@@ -26,17 +26,26 @@ function readPhoto(file) {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      URL.revokeObjectURL(url);
-      if (Math.min(img.width, img.height) < MIN_PHOTO_SIDE) {
+      const width = img.naturalWidth;
+      const height = img.naturalHeight;
+      if (Math.min(width, height) < MIN_PHOTO_SIDE) {
+        URL.revokeObjectURL(url);
         reject(new Error(`${file.name} is too small. Use a photo at least ${MIN_PHOTO_SIDE}px on each side.`));
         return;
       }
-      const scale = Math.min(1, 1000 / Math.max(img.width, img.height));
+      const scale = Math.min(1, 1000 / Math.max(width, height));
       const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", 0.78));
+      canvas.width = Math.round(width * scale);
+      canvas.height = Math.round(height * scale);
+      const context = canvas.getContext("2d");
+      context.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+      if (canvas.width < MIN_PHOTO_SIDE || canvas.height < MIN_PHOTO_SIDE || dataUrl.length < 1500) {
+        reject(new Error(`${file.name} came out blank. Try another photo.`));
+        return;
+      }
+      resolve(dataUrl);
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
